@@ -8,17 +8,19 @@ import com.example.repository.DepartmentRepository;
 import com.example.repository.IEmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/api/employee")
-public class Phase1Controller {
+public class PhaseOneController {
 
 
     @Autowired
@@ -27,6 +29,7 @@ public class Phase1Controller {
 
     @Autowired
     private DepartmentRepository departmentRepository;
+
 
 
     /*create an Employee*/
@@ -59,7 +62,7 @@ public class Phase1Controller {
 
     /* 3. Map department to employee */
 
-
+   /* mapping done in Employee and Department classes */
 
 
     /* 4. Create department */
@@ -81,7 +84,7 @@ public class Phase1Controller {
                 departmentRepository
                         .findById(departmentId)
                         .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + departmentId));
-        department.setName(departmentDetails.getName());
+        department.setDepartmentName(departmentDetails.getDepartmentName());
         final Department updatedDepartment = departmentRepository.save(department);
         return ResponseEntity.ok(updatedDepartment);
     }
@@ -126,18 +129,17 @@ public class Phase1Controller {
 
 
     /* 8. Get all employees by department Id
-*/
+     */
 
 
-    @GetMapping("/employeeDetailsGettingByDepartmentId/{id}")
-    public ResponseEntity<List<Employee>> getEmployeeByDepartmentId(@PathVariable(value = "departmentId") Integer departmentId)
-            throws ResourceNotFoundException {
-        Employee employee =
-                employeeRepository.findAllById(departmentId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Employee not found on :: " + departmentId));
-        return ResponseEntity.ok().body(employee);
+    @RequestMapping(value = "/employeeDetailsGettingByDepartmentId/{id}", //
+            method = RequestMethod.GET, //
+            produces = { MediaType.APPLICATION_JSON_VALUE})
+    @ResponseBody
+    public List<Employee> getEmployees(@PathVariable("id") Integer Id) {
+        List<Employee> list =employeeRepository.getEmployeesByDepartmentId(Id);
+        return list;
     }
-
 
 
 }
